@@ -69,9 +69,9 @@ function removeVariables() {
    </div>
    <div class="column q-pt-md">
     <span class=" text-h6 text-primary">Replace Text</span>
-    Text: {{ text }}
     <q-input v-model="form.text" label="Text"/>
     <q-btn @click="replaceText" color="primary" label="Replace Text"/>
+    <span class="text-h6 text-primary">{{ text || '<Empty>' }}</span>
    </div>
 
   </div>
