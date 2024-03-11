@@ -64,7 +64,7 @@ function removeVariables() {
   variables.value = []
 }
 
-
+const output = computed(() => text.value || '<Empty>')
 </script>
 
 <template>
@@ -87,9 +87,9 @@ function removeVariables() {
    </div>
    <div class="column q-pt-md">
     <span class=" text-h6 text-primary">Replace Text</span>
-    <q-input v-model="form.text" label="Text"/>
+    <q-input type="textarea" v-model="form.text" label="Text"/>
     <q-btn @click="replaceText" color="primary" label="Replace Text"/>
-    <span class="text-h6 text-primary">{{ text || '<Empty>' }}</span>
+    <q-input readonly color="primary" v-model="output" type="textarea" input-class="text-primary"/>
    </div>
 
   </div>
