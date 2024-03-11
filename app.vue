@@ -1,12 +1,23 @@
 <script lang="ts" setup>
 import { createRegExp, exactly, maybe, oneOrMore, digit, char, word, wordChar, global, multiline} from 'magic-regexp'
 
-const regExp = createRegExp(
-  exactly('{'),
-  oneOrMore(wordChar).grouped(),
-  exactly('}'),
-  [global, multiline]
-)
+
+const form = ref({
+  name: '',
+  value: '', 
+  text: '',
+  separators: {
+  start: '{',
+  end: '}'
+}
+})
+
+const separators = ref({
+  start: '{',
+  end: '}'
+})
+
+
 const variables = ref<{name: string, value: string}[]>([])
 
 const columns = [
@@ -25,14 +36,10 @@ const columns = [
   },
 ]
 
-const form = ref({
-  name: '',
-  value: '', 
-  text: ''
-})
 
 function addVariable() {
   variables.value.push({...form.value})
+  separators.value = form.value.separators
   form.value.name = ''
   form.value.value = ''
 }
@@ -40,6 +47,12 @@ function addVariable() {
 const text = ref('')
 
 function replaceText() {
+  const regExp = createRegExp(
+  exactly(separators.value.start),
+  oneOrMore(wordChar).grouped(),
+  exactly(separators.value.end),
+  [global, multiline]
+)
   text.value = form.value.text.replaceAll(regExp, (match, key: string) => {
   const _data: any = Object.fromEntries(variables.value.map(({name, value}) => [name, value]))
   return _data[key] || `{${key}}`
@@ -50,6 +63,8 @@ form.value.text = ''
 function removeVariables() {
   variables.value = []
 }
+
+
 </script>
 
 <template>
@@ -60,10 +75,13 @@ function removeVariables() {
       <span class="text-primary text-h6">Variables</span>
       <q-btn flat icon="delete" @click="removeVariables" color="negative" label="Remove Variables"/>
      </div>
+     <q-input v-model="separators.start" label="Start Separator"/>
+    <q-input v-model="separators.end" label="End Separator"/>
     </template>
   </q-table>
    <q-input v-model="form.name" label="Name"/>
    <q-input v-model="form.value" label="Value"/>
+   
    <div class="row">
     <q-btn color="primary" @click="addVariable" label="Add Variable"/>
    </div>
