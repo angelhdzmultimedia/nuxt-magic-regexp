@@ -10,20 +10,37 @@ const regExp = createRegExp(
  
   [global, multiline]
 )
-const data = {
-  name: 'Angel',
-  age: 38
-}
+const data = ref<{name: string, value: string}[]>([
+  {name: 'name', value: 'Angel'}
+])
 
-const replacedText = text.replaceAll(regExp, (match, key) => {
-  return data[key] || `{${key}}`
+
+const replacedText = text.replaceAll(regExp, (match, key: string) => {
+  const _data: any = Object.fromEntries(data.value.map(({name, value}) => [name, value]))
+  return _data[key] || `{${key}}`
 })//
+
+const columns = [
+  {
+    name: 'name',
+    key: 'name',
+    field: 'name',
+    label: 'Name'
+  },
+
+  {
+    name: 'value',
+    key: 'value',
+    field: 'value',
+    label: 'Value'
+  },
+]
 
 console.log(replacedText)
 </script>
 
 <template>
-  <div>
-   <h1>Index</h1>
+  <div class="column">
+   <q-table :rows="data" :columns="columns"/>
   </div>
 </template>
