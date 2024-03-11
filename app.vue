@@ -1,24 +1,15 @@
 <script lang="ts" setup>
 import { createRegExp, exactly, maybe, oneOrMore, digit, char, word, wordChar, global, multiline} from 'magic-regexp'
 
-const text = 'My name is {name} and I\'m {age} years old!';
 const regExp = createRegExp(
-
-    exactly('{'),
-    oneOrMore(wordChar).grouped(),
+  exactly('{'),
+  oneOrMore(wordChar).grouped(),
   exactly('}'),
- 
   [global, multiline]
 )
-const data = ref<{name: string, value: string}[]>([
-  {name: 'name', value: 'Angel'}
-])
+const variables = ref<{name: string, value: string}[]>([])
 
 
-const replacedText = text.replaceAll(regExp, (match, key: string) => {
-  const _data: any = Object.fromEntries(data.value.map(({name, value}) => [name, value]))
-  return _data[key] || `{${key}}`
-})//
 
 const columns = [
   {
@@ -36,11 +27,54 @@ const columns = [
   },
 ]
 
-console.log(replacedText)
+const form = ref({
+  name: '',
+  value: '', 
+  text: ''
+})
+
+function addVariable() {
+  variables.value.push({...form.value})
+  form.value.name = ''
+  form.value.value = ''
+}
+
+const text = ref('')
+
+function replaceText() {
+  text.value = form.value.text.replaceAll(regExp, (match, key: string) => {
+  const _data: any = Object.fromEntries(variables.value.map(({name, value}) => [name, value]))
+  return _data[key] || `{${key}}`
+})
+form.value.text = ''
+}
+
+function removeVariables() {
+  variables.value = []
+}
 </script>
 
 <template>
-  <div class="column">
-   <q-table :rows="data" :columns="columns"/>
+  <div class="column q-pa-md">
+   <q-table  row-key="name" :rows="variables" :columns="columns">
+    <template #top>
+     <div class="row q-gutter-x-md items-center">
+      <span class="text-primary text-h6">Variables</span>
+      <q-btn @click="removeVariables" color="negative" label="Remove Variables"/>
+     </div>
+    </template>
+  </q-table>
+   <q-input v-model="form.name" label="Name"/>
+   <q-input v-model="form.value" label="Value"/>
+   <div class="row">
+    <q-btn color="primary" @click="addVariable" label="Add Variable"/>
+   </div>
+   <div class="column q-pt-md">
+    <span class=" text-h6 text-primary">Replace Text</span>
+    Text: {{ text }}
+    <q-input v-model="form.text" label="Text"/>
+    <q-btn @click="replaceText" color="primary" label="Replace Text"/>
+   </div>
+
   </div>
 </template>
