@@ -9,8 +9,6 @@ const regExp = createRegExp(
 )
 const variables = ref<{name: string, value: string}[]>([])
 
-
-
 const columns = [
   {
     name: 'name',
