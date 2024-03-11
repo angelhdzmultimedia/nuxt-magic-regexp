@@ -58,7 +58,7 @@ function removeVariables() {
     <template #top>
      <div class="row q-gutter-x-md items-center">
       <span class="text-primary text-h6">Variables</span>
-      <q-btn @click="removeVariables" color="negative" label="Remove Variables"/>
+      <q-btn flat icon="delete" @click="removeVariables" color="negative" label="Remove Variables"/>
      </div>
     </template>
   </q-table>
